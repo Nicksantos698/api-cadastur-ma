@@ -1,15 +1,20 @@
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from supabase import create_client
-import os
 
 app = Flask(__name__)
-CORS(app) # Permite que o site acesse a API
+CORS(app) # Permite o site acesse a API
 
-# Configurações do Supabase
-URL_SUPABASE = "https://zaaoyieedbtqpqmnntmp.supabase.co"
-CHAVE_PUBLICA = "sb_publishable__3C7E6EfiL96wCzcbQVv2Q_v5aMP9Rp"
-supabase = create_client(URL_SUPABASE, CHAVE_PUBLICA)
+# BUSCANDO AS CHAVES DAS VARIÁVEIS DE AMBIENTE DO RENDER
+URL_SUPABASE = os.environ.get("SUPABASE_URL")
+CHAVE_PUBLICA = os.environ.get("SUPABASE_KEY")
+
+# Verificação de segurança: Se as chaves não forem encontradas, a API avisa o erro
+if not URL_SUPABASE or not CHAVE_PUBLICA:
+    print("ERRO: Variáveis de ambiente SUPABASE_URL ou SUPABASE_KEY não configuradas!")
+else:
+    supabase = create_client(URL_SUPABASE, CHAVE_PUBLICA)
 
 @app.route('/')
 def index():
@@ -24,8 +29,7 @@ def index():
 @app.route('/api/v1/empresas', methods=['GET'])
 def get_empresas():
     try:
-        # Busca todos os dados da tabela
-        # Usamos .select("*") para pegar tudo e .order("nome_prestador") para organizar
+        # Busca todos os dados da tabela no Supabase
         resposta = supabase.table("empresas_ma").select("*").order("nome_prestador").execute()
         
         return jsonify({
