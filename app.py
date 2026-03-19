@@ -29,8 +29,8 @@ def index():
 @app.route('/api/v1/empresas', methods=['GET'])
 def get_empresas():
     try:
-        # Busca todos os dados da tabela no Supabase
-        resposta = supabase.table("empresas_ma").select("*").order("nome_prestador").execute()
+        ## Como deve ficar (Ordenado por ID)
+resposta = supabase.table("empresas_ma").select("*").order("id").execute()
         
         return jsonify({
             "quantidade": len(resposta.data),
